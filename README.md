@@ -2,6 +2,7 @@
 
 **EduGrade AI** is a premium, modern, and highly visual web-based educational tool designed to assist teachers and professors in automatically evaluating descriptive (subjective) exam answers. Using client-side generative AI (Google Gemini 1.5 Flash) combined with local Natural Language Processing (NLP) token-similarity heuristics, it predicts marks, assigns letter grades, identifies missing key terms, and generates rich, constructive, human-like feedback.
 
+
 This project is structured as a fully functional, self-contained **Single Page Application (SPA)** that runs entirely in the browser. It features a premium, responsive glassmorphic interface, beautiful interactive dashboard charts, custom print-ready assessment reports, and support for both light and dark themes.
 
 ---
