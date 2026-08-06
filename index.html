@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGrade AI - Smart Subjective AutoGrader</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- html2pdf.js for Premium PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- PDF.js for client-side text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <i data-lucide="graduation-cap" class="brand-icon"></i>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-name">EduGrade AI</span>
+                    <span class="brand-tagline">AutoGrader</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="nav-btn active" data-page="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-btn" data-page="about">
+                    <i data-lucide="info"></i>
+                    <span>About Project</span>
+                </button>
+                <button class="nav-btn" data-page="grader">
+                    <i data-lucide="clipboard-check"></i>
+                    <span>AI AutoGrader</span>
+                </button>
+                <button class="nav-btn" data-page="dashboard">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" data-page="report">
+                    <i data-lucide="file-text"></i>
+                    <span>Report Preview</span>
+                </button>
+                <button class="nav-btn" data-page="developer">
+                    <i data-lucide="code-2"></i>
+                    <span>About Developer</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <!-- Theme toggle and API config -->
+                <button class="sidebar-action-btn" id="theme-toggle" title="Toggle Theme">
+                    <i data-lucide="moon" class="theme-icon-dark"></i>
+                    <i data-lucide="sun" class="theme-icon-light" style="display: none;"></i>
+                    <span class="action-text">Dark Mode</span>
+                </button>
+                
+                <button class="sidebar-action-btn" id="api-config-btn" title="Configure API Keys">
+                    <i data-lucide="key"></i>
+                    <span class="action-text">Gemini API Key</span>
+                </button>
+                
+                <div class="api-status-badge inactive" id="api-status-badge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Local Mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Body Wrapper -->
+        <main class="main-content">
+            <!-- HEADER BAR -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="mobile-toggle" id="mobile-menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 class="nav-title" id="current-page-title">Home</h1>
+                </div>
+                <div class="navbar-right">
+                    <div class="user-profile">
+                        <div class="profile-details">
+                            <span class="profile-name">Evaluator Portal</span>
+                            <span class="profile-role">Teacher / Professor</span>
+                        </div>
+                        <div class="profile-avatar">
+                            <span>TP</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- PAGES SHELLS -->
+            <div class="page-container">
+                
+                <!-- 1. HOME PAGE -->
+                <section id="page-home" class="page-section active">
+                    <div class="hero-section">
+                        <div class="hero-content">
+                            <div class="badge-pill">Powered by Gemini Pro AI</div>
+                            <h2 class="hero-title">Next-Gen Subjective <br><span class="gradient-text">Exam Evaluation</span></h2>
+                            <p class="hero-subtitle">Evaluate descriptive student answers, check concepts, assign grades, and generate pedagogic feedback in seconds. Premium grading engine built for modern educators.</p>
+                            <div class="hero-buttons">
+                                <button class="btn btn-primary" onclick="app.navigateTo('grader')">
+                                    <span>Launch AutoGrader</span>
+                                    <i data-lucide="arrow-right"></i>
+                                </button>
+                                <button class="btn btn-secondary" onclick="app.navigateTo('about')">
+                                    <span>Learn Methodology</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="hero-visual">
+                            <div class="glass-illustration animate-float">
+                                <div class="illus-header">
+                                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                                    <span class="title-bar">AI Evaluation Report</span>
+                                </div>
+                                <div class="illus-body">
+                                    <div class="illus-row">
+                                        <span class="label">Student:</span>
+                                        <span class="value">Emily Davis</span>
+                                    </div>
+                                    <div class="illus-row">
+                                        <span class="label">Subject:</span>
+                                        <span class="value">Computer Science</span>
+                                    </div>
+                                    <div class="illus-divider"></div>
+                                    <div class="illus-score-section">
+                                        <div class="circular-progress-mock">
+                                            <div class="inner-circle">
+                                                <span class="score-val">18</span>
+                                                <span class="max-val">/ 20</span>
+                                            </div>
+                                        </div>
+                                        <div class="illus-grade">
+                                            <span class="grade-letter">A+</span>
+                                            <span class="grade-label">EXCELLENT</span>
+                                        </div>
+                                    </div>
+                                    <div class="illus-feedback-mock">
+                                        <div class="line long"></div>
+                                        <div class="line medium"></div>
+                                        <div class="line short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Highlights Grid -->
+                    <div class="features-grid">
+                        <div class="feature-card-premium card-hover">
+                            <div class="icon-wrapper primary-bg">
+                                <i data-lucide="cpu"></i>
+                            </div>
+                            <h3>Hybrid AI Processing</h3>
+                            <p>Direct API integration with Google Gemini for context-aware subjective grading, with local text-similarity and keyword coverage heuristics fallback.</p>
+                        </div>
+                        <div class="feature-card-premium card-hover">
+                            <div class="icon-wrapper secondary-bg">
+                                <i data-lucide="sparkles"></i>
+                            </div>
+                            <h3>Rich Constructive Feedback</h3>
+                            <p>Identifies exact strengths, key missing vocabulary, and provides detailed actionable suggestions for students to improve in future tests.</p>
+                        </div>
+                        <div class="feature-card-premium card-hover">
+                            <div class="icon-wrapper accent-bg">
+                                <i data-lucide="bar-chart-2"></i>
+                            </div>
+                            <h3>Analytics Dashboard</h3>
+                            <p>Real-time updates to performance indicators, standard grade distribution plots, marks averages, and historical records instantly.</p>
+                        </div>
+                        <div class="feature-card-premium card-hover">
+                            <div class="icon-wrapper highlight-bg">
+                                <i data-lucide="file-down"></i>
+                            </div>
+                            <h3>PDF Report Generation</h3>
+                            <p>Generates print-ready pedagogical certificates and grading sheets with professional layout formatting, available for download.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. ABOUT PROJECT -->
+                <section id="page-about" class="page-section">
+                    <div class="about-grid">
+                        <div class="about-card glass-card">
+                            <h2>Project Background & Objectives</h2>
+                            <p>Subjective examinations are essential for evaluating students' deep comprehension, reasoning, and synthesis capabilities. However, manually grading descriptive essays and answers is highly labor-intensive, time-consuming, and prone to grading bias or fatigue.</p>
+                            <p><strong>EduGrade AI</strong> solves this challenge by acting as an intelligent co-pilot for teachers. Using advanced generative AI combined with semantic local analysis, it interprets the subjective context, compares it to the teacher's benchmark (model answer), and returns consistent, unbiased marks alongside comprehensive learning feedback.</p>
+                            
+                            <h3 class="mt-4">Our Core Philosophy</h3>
+                            <ul class="about-list">
+                                <li>
+                                    <i data-lucide="check-circle-2" class="list-icon text-success"></i>
+                                    <span><strong>AI-Assisted, Not Replaced:</strong> The AutoGrader works to augment teachers, providing instant second opinions and draft feedback.</span>
+                                </li>
+                                <li>
+                                    <i data-lucide="check-circle-2" class="list-icon text-success"></i>
+                                    <span><strong>Semantic Relevance:</strong> Evaluates the core concepts rather than just matching characters or syntax.</span>
+                                </li>
+                                <li>
+                                    <i data-lucide="check-circle-2" class="list-icon text-success"></i>
+                                    <span><strong>Pedagogical Feedback:</strong> Places more value on actionable student growth than numerical scores.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="about-card glass-card">
+                            <h2>Grading Process Pipeline</h2>
+                            <div class="pipeline-container">
+                                <div class="pipeline-step">
+                                    <div class="step-num">1</div>
+                                    <div class="step-details">
+                                        <h4>Input Submission</h4>
+                                        <p>Student answers and the teacher's model answer are uploaded or typed into the system along with rubrics details.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="step-num">2</div>
+                                    <div class="step-details">
+                                        <h4>NLP Preprocessing & Feature Extraction</h4>
+                                        <p>Counts words, characters, estimate reading times, and runs local token matching to assess text length, keyword hits and richness.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="step-num">3</div>
+                                    <div class="step-details">
+                                        <h4>Contextual AI Semantic Evaluation</h4>
+                                        <p>The core evaluation prompt is routed to Gemini API (or the local rules engine fallback) which examines definitions, context, and structural coherence.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="step-num">4</div>
+                                    <div class="step-details">
+                                        <h4>Grading Output & Logging</h4>
+                                        <p>The system normalizes scores, computes confidence scales, updates the dashboard analytics, and populates the printable PDF report.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. AI AUTOGRAPHER FORM -->
+                <section id="page-grader" class="page-section">
+                    <div class="grader-layout">
+                        <!-- Form Area -->
+                        <div class="grader-form-card glass-card">
+                            <h2 class="card-title"><i data-lucide="edit-3"></i> Evaluation Inputs</h2>
+                            <form id="grading-form" onsubmit="event.preventDefault(); grader.handleGrading();">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="student-name"><i data-lucide="user" class="input-icon"></i> Student Name</label>
+                                        <input type="text" id="student-name" placeholder="Enter student's full name" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="subject-select"><i data-lucide="book-open" class="input-icon"></i> Subject / Course</label>
+                                        <select id="subject-select" required>
+                                            <option value="" disabled selected>Select Subject</option>
+                                            <option value="Computer Science">Computer Science & AI</option>
+                                            <option value="Physics">Physics & Thermodynamics</option>
+                                            <option value="Environmental Science">Environmental Sciences</option>
+                                            <option value="English Literature">English Literature & History</option>
+                                            <option value="Business Management">Business Management & Strategy</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="label-wrapper">
+                                        <label for="exam-question"><i data-lucide="help-circle" class="input-icon"></i> Exam Question</label>
+                                        <div class="pdf-upload-btn-wrapper">
+                                            <input type="file" id="upload-question-pdf" accept=".pdf" class="pdf-file-input">
+                                            <label for="upload-question-pdf" class="pdf-upload-label" id="label-upload-question-pdf">
+                                                <i data-lucide="file-up"></i>
+                                                <span>Upload Question PDF</span>
+                                            </label>
+                                            <span class="pdf-loader" id="loader-upload-question-pdf" style="display: none;"><i data-lucide="loader-2" class="animate-spin text-primary"></i></span>
+                                        </div>
+                                    </div>
+                                    <textarea id="exam-question" rows="2" placeholder="Paste or upload the exam question here..." required></textarea>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-8">
+                                        <div class="label-wrapper">
+                                            <label for="model-answer"><i data-lucide="award" class="input-icon"></i> Teacher's Model Answer (Reference Benchmarks)</label>
+                                            <div class="pdf-upload-btn-wrapper">
+                                                <input type="file" id="upload-model-pdf" accept=".pdf" class="pdf-file-input">
+                                                <label for="upload-model-pdf" class="pdf-upload-label" id="label-upload-model-pdf">
+                                                    <i data-lucide="file-check-2"></i>
+                                                    <span>Upload Expected Answer PDF</span>
+                                                </label>
+                                                <span class="pdf-loader" id="loader-upload-model-pdf" style="display: none;"><i data-lucide="loader-2" class="animate-spin text-primary"></i></span>
+                                            </div>
+                                        </div>
+                                        <textarea id="model-answer" rows="3" placeholder="Provide key terms, concepts, or a model solution for alignment comparison..." required></textarea>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="max-marks"><i data-lucide="sliders" class="input-icon"></i> Maximum Marks</label>
+                                        <select id="max-marks" required>
+                                            <option value="5">5 Marks (Short Essay)</option>
+                                            <option value="10" selected>10 Marks (Medium Response)</option>
+                                            <option value="15">15 Marks (Detailed Analysis)</option>
+                                            <option value="20">20 Marks (Comprehensive Essay)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="label-wrapper">
+                                        <label for="student-answer"><i data-lucide="pen-tool" class="input-icon"></i> Student's Answer</label>
+                                        <div class="pdf-actions-wrapper">
+                                            <div class="pdf-upload-btn-wrapper">
+                                                <input type="file" id="upload-student-pdf" accept=".pdf" class="pdf-file-input">
+                                                <label for="upload-student-pdf" class="pdf-upload-label" id="label-upload-student-pdf">
+                                                    <i data-lucide="file-up"></i>
+                                                    <span>Upload Student Answer PDF</span>
+                                                </label>
+                                                <span class="pdf-loader" id="loader-upload-student-pdf" style="display: none;"><i data-lucide="loader-2" class="animate-spin text-primary"></i></span>
+                                            </div>
+                                            <div class="word-counter-badges">
+                                                <span class="count-badge"><span id="word-count">0</span> words</span>
+                                                <span class="count-badge"><span id="char-count">0</span> chars</span>
+                                                <span class="count-badge"><span id="read-time">0</span> min read</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <textarea id="student-answer" rows="8" placeholder="Paste or type the student's handwritten or typed response here..." required></textarea>
+                                </div>
+
+                                <div class="form-footer mt-4">
+                                    <div class="quality-score-wrapper">
+                                        <span class="quality-label">Local Content Richness:</span>
+                                        <div class="quality-bar-container">
+                                            <div class="quality-bar" id="quality-indicator-bar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="quality-val" id="quality-indicator-text">Incomplete</span>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg" id="grade-submit-btn">
+                                        <i data-lucide="cpu"></i>
+                                        <span>Grade Answer</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Quick Help Cards / Instructions -->
+                        <div class="grader-help-container">
+                            <div class="glass-card instructions-card">
+                                <h3><i data-lucide="check-square" class="text-primary"></i> Assessment Guidelines</h3>
+                                <p>To obtain highly accurate grading scores from the engine, follow these recommendations:</p>
+                                <ul class="info-list">
+                                    <li>Provide at least 3-4 sentence structures in the <strong>Model Answer</strong> with specific key terms.</li>
+                                    <li>If you are in <strong>Local Mode</strong>, the matching accuracy relies strongly on keyword overlaps between the two answers.</li>
+                                    <li>For grading in languages other than English or deep logical validation, switch to <strong>Gemini AI Mode</strong>.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="glass-card info-card">
+                                <h3><i data-lucide="key-round" class="text-accent"></i> Key Config</h3>
+                                <p id="api-indicator-instruction">The AutoGrader is currently operating in <strong>Local Mode</strong>. Evaluation is quick but relies on word counts and term matches.</p>
+                                <button class="btn btn-secondary btn-sm btn-full mt-2" onclick="app.toggleApiModal(true)">
+                                    <i data-lucide="settings"></i>
+                                    <span>Configure Gemini API</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. REPORT PREVIEW -->
+                <section id="page-report" class="page-section">
+                    <!-- Blank state if no answer has been graded yet -->
+                    <div id="report-blank-state" class="blank-state-card glass-card">
+                        <i data-lucide="search-code" class="blank-icon"></i>
+                        <h3>No Grade Report Available</h3>
+                        <p>You haven't graded any descriptive answers yet. Submit a student answer in the AutoGrader page to view their detailed performance report.</p>
+                        <button class="btn btn-primary" onclick="app.navigateTo('grader')">
+                            <i data-lucide="plus"></i>
+                            <span>Go to AutoGrader</span>
+                        </button>
+                    </div>
+
+                    <!-- Main Report Content -->
+                    <div id="report-view-container" style="display: none;">
+                        <div class="report-actions-bar">
+                            <button class="btn btn-secondary" onclick="app.navigateTo('grader')">
+                                <i data-lucide="arrow-left"></i>
+                                <span>Grade Another</span>
+                            </button>
+                            <div class="action-group">
+                                <button class="btn btn-secondary" id="btn-copy-feedback" onclick="report.copyFeedback()">
+                                    <i data-lucide="copy"></i>
+                                    <span>Copy Feedback</span>
+                                </button>
+                                <button class="btn btn-primary" id="btn-download-pdf" onclick="report.downloadPDF()">
+                                    <i data-lucide="download"></i>
+                                    <span>Download Report PDF</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Print Layout -->
+                        <div class="report-print-card" id="report-card-to-print">
+                            <!-- Report Header -->
+                            <div class="report-print-header">
+                                <div class="report-title-brand">
+                                    <div class="report-logo">
+                                        <i data-lucide="graduation-cap"></i>
+                                    </div>
+                                    <div>
+                                        <h2>EduGrade AI</h2>
+                                        <span class="sub">Subjective Assessment Certificate</span>
+                                    </div>
+                                </div>
+                                <div class="report-meta-timestamp" id="report-timestamp">
+                                    Date: July 09, 2026 10:15 PM
+                                </div>
+                            </div>
+                            
+                            <hr class="report-divider">
+
+                            <!-- Student & Exam Details -->
+                            <div class="report-meta-grid">
+                                <div class="meta-item">
+                                    <span class="meta-label">Student Name</span>
+                                    <span class="meta-value" id="rep-student-name">John Doe</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Subject</span>
+                                    <span class="meta-value" id="rep-subject">Computer Science</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Max Marks</span>
+                                    <span class="meta-value" id="rep-max-marks">10 Marks</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Grading Engine</span>
+                                    <span class="meta-value highlight-text" id="rep-engine">Gemini Pro API</span>
+                                </div>
+                            </div>
+
+                            <div class="report-layout-columns mt-4">
+                                <!-- Score and Grade Badge -->
+                                <div class="report-score-panel">
+                                    <div class="circular-score-display">
+                                        <svg class="progress-ring" width="160" height="160">
+                                            <circle class="progress-ring__background" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                                            <circle class="progress-ring__circle" id="report-progress-circle" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                                        </svg>
+                                        <div class="score-center-text">
+                                            <span class="score-num" id="rep-score-obtained">8.5</span>
+                                            <span class="score-max" id="rep-score-denominator">/ 10</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="report-grade-badge mt-3">
+                                        <span class="grade-label">Grade Assigned</span>
+                                        <span class="grade-value" id="rep-grade">A</span>
+                                    </div>
+
+                                    <div class="metric-indicator mt-3">
+                                        <span class="ind-label">AI Confidence Scale</span>
+                                        <div class="ind-bar-container">
+                                            <div class="ind-bar accent-bg" id="rep-confidence-bar" style="width: 90%;"></div>
+                                        </div>
+                                        <span class="ind-value" id="rep-confidence-value">90%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Text inputs summary -->
+                                <div class="report-text-panel">
+                                    <div class="text-block-box">
+                                        <h4>Question</h4>
+                                        <p id="rep-question">What is a database transaction and explain ACID properties?</p>
+                                    </div>
+                                    <div class="text-block-box">
+                                        <h4>Student Response</h4>
+                                        <p id="rep-student-answer" class="scrollable-block-text">Student's answer text goes here...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider mt-4 mb-4"></div>
+
+                            <!-- Detailed Feedback Section -->
+                            <div class="report-feedback-details">
+                                <h3 class="feedback-section-title"><i data-lucide="message-square-quote"></i> Evaluation & Feedback Summary</h3>
+                                
+                                <div class="feedback-speech-bubble" id="rep-general-feedback">
+                                    "The student demonstrates a solid understanding of database transaction definitions. However, details regarding isolation levels could be expanded..."
+                                </div>
+
+                                <div class="feedback-cards-row">
+                                    <div class="feedback-sub-card green-border">
+                                        <h4><i data-lucide="thumbs-up" class="text-success"></i> Strengths</h4>
+                                        <ul id="rep-strengths">
+                                            <li>Clear definitions of Atomicity and Durability</li>
+                                            <li>Relevant database instances mentioned</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="feedback-sub-card peach-border">
+                                        <h4><i data-lucide="alert-triangle" class="text-warning"></i> Missing Concepts</h4>
+                                        <ul id="rep-missing-concepts">
+                                            <li>Failed to outline the role of the recovery manager</li>
+                                            <li>Missed explaining isolation levels</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="feedback-sub-card mt-3 lavender-border">
+                                    <h4><i data-lucide="trending-up" class="text-primary"></i> Actionable Suggestions for Improvement</h4>
+                                    <ul id="rep-improvements">
+                                        <li>Use simple block diagrams to represent isolation levels.</li>
+                                        <li>Integrate specific SQL commit/rollback syntax to support the definitions.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <hr class="report-divider mt-5">
+                            
+                            <!-- Signature details -->
+                            <div class="report-signature-footer">
+                                <div class="signature-line">
+                                    <span class="sig-title">AI AutoGrader Platform</span>
+                                    <span class="sig-subtitle">Automated Grading Certification</span>
+                                </div>
+                                <div class="signature-line text-right">
+                                    <span class="sig-title">System Verified</span>
+                                    <span class="sig-subtitle">Secure NLP Parser</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. ANALYTICS DASHBOARD -->
+                <section id="page-dashboard" class="page-section">
+                    <!-- Stats Grid -->
+                    <div class="dashboard-stats-grid">
+                        <div class="stat-card glass-card card-hover">
+                            <div class="stat-icon primary-bg">
+                                <i data-lucide="activity"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Graded</span>
+                                <span class="stat-value" id="dash-total-graded">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card card-hover">
+                            <div class="stat-icon secondary-bg">
+                                <i data-lucide="award"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Average Score</span>
+                                <span class="stat-value" id="dash-average-score">0.0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card card-hover">
+                            <div class="stat-icon accent-bg">
+                                <i data-lucide="target"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Avg AI Confidence</span>
+                                <span class="stat-value" id="dash-average-confidence">0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card card-hover">
+                            <div class="stat-icon highlight-bg">
+                                <i data-lucide="book-marked"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Active Courses</span>
+                                <span class="stat-value" id="dash-active-courses">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Panel -->
+                    <div class="dashboard-charts-row">
+                        <div class="chart-card glass-card">
+                            <h3><i data-lucide="bar-chart-3"></i> Grade Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-grades"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card glass-card">
+                            <h3><i data-lucide="trending-up"></i> Score History & Trend</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-scores"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-charts-row mt-4">
+                        <div class="chart-card glass-card full-width">
+                            <h3><i data-lucide="pie-chart" style="transform: rotate(45deg);"></i> Subject Performance Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="chart-subjects"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Table Section -->
+                    <div class="dashboard-table-card glass-card mt-4">
+                        <div class="table-card-header">
+                            <h3><i data-lucide="list"></i> Evaluation History Logs</h3>
+                            <div class="table-actions">
+                                <button class="btn btn-secondary btn-sm" id="btn-clear-history" onclick="app.clearGradingHistory()">
+                                    <i data-lucide="trash-2"></i>
+                                    <span>Reset Logs</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="history-table" id="dashboard-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th>Score</th>
+                                        <th>Grade</th>
+                                        <th>Confidence</th>
+                                        <th>Engine</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <!-- Dynamic rows loaded here -->
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4 text-muted">No evaluations found in storage.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. ABOUT DEVELOPER -->
+                <section id="page-developer" class="page-section">
+                    <div class="developer-profile-wrapper">
+                        <div class="developer-card glass-card animate-fade-in">
+                            <div class="developer-avatar-wrapper">
+                                <div class="developer-avatar-large">
+                                    <i data-lucide="user" class="dev-placeholder-icon"></i>
+                                </div>
+                            </div>
+                            <div class="developer-info">
+                                <h2 class="dev-name">Project Presenter / Developer</h2>
+                                <p class="dev-title">Computer Science & Engineering Student</p>
+                                <p class="dev-tagline">College of Technology and Sciences</p>
+                                <div class="dev-divider"></div>
+                                <p class="dev-bio">This project was designed and built as a senior-year demonstration project on automated subjective evaluation. The platform represents how AI can work alongside educators to make grading faster, more equitable, and highly beneficial for student growth.</p>
+                                
+                                <div class="skills-tags mt-4">
+                                    <span class="skill-tag">Web Application Development</span>
+                                    <span class="skill-tag">Natural Language Processing</span>
+                                    <span class="skill-tag">Gemini LLM Integration</span>
+                                    <span class="skill-tag">Vanilla CSS Design Systems</span>
+                                    <span class="skill-tag">Client-Side Analytics</span>
+                                </div>
+
+                                <div class="dev-socials mt-4">
+                                    <a href="#" class="social-link" title="GitHub Profile">
+                                        <i data-lucide="github"></i>
+                                        <span>GitHub</span>
+                                    </a>
+                                    <a href="#" class="social-link" title="LinkedIn Profile">
+                                        <i data-lucide="linkedin"></i>
+                                        <span>LinkedIn</span>
+                                    </a>
+                                    <a href="#" class="social-link" title="Email Developer">
+                                        <i data-lucide="mail"></i>
+                                        <span>Email Contact</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer Section -->
+            <footer class="app-footer">
+                <p>&copy; 2026 EduGrade AI. All Rights Reserved. Built as a Senior Project Demonstration.</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- API KEY CONFIGURATION MODAL -->
+    <div class="modal-overlay" id="api-modal-overlay" style="display: none;">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3><i data-lucide="key"></i> Gemini API Configuration</h3>
+                <button class="modal-close-btn" onclick="app.toggleApiModal(false)">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your <strong>Gemini API Key</strong> to connect this web application directly to the live Google AI Cloud evaluation engine. This allows the AutoGrader to execute dynamic subjective logic, detailed text analysis, and premium teacher feedback creation.</p>
+                
+                <div class="form-group mt-3">
+                    <label for="gemini-api-key">Gemini API Key</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="gemini-api-key" placeholder="AIzaSy...">
+                        <button type="button" class="btn-toggle-visibility" onclick="app.toggleKeyVisibility()">
+                            <i data-lucide="eye" id="key-visibility-icon"></i>
+                        </button>
+                    </div>
+                    <span class="input-help">Your API Key is kept 100% locally in your secure browser's local storage and is never uploaded to any remote server (except direct API requests to Google).</span>
+                </div>
+                
+                <div class="api-instructions-accordion mt-3">
+                    <h4>How to get a free API Key?</h4>
+                    <ol>
+                        <li>Visit the <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a> portal.</li>
+                        <li>Log in with your Google account.</li>
+                        <li>Click on <strong>"Get API Key"</strong> on the side menu.</li>
+                        <li>Create a key, copy it, and paste it here!</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.clearApiKey()">Clear Key</button>
+                <button class="btn btn-primary" onclick="app.saveApiKey()">Save API Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING / EVALUATING MODAL OVERLAY -->
+    <div class="modal-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-modal glass-card">
+            <div class="loading-spinner-wrapper">
+                <div class="loading-pulse-ring"></div>
+                <div class="loading-brain-icon">
+                    <i data-lucide="brain-circuit" class="animate-pulse"></i>
+                </div>
+            </div>
+            <h3>Evaluating Student Answer</h3>
+            <p id="loading-text-status">Analyzing word structure, detecting relevant terminology, and aligning semantic context...</p>
+            <div class="loading-progress-bar-container">
+                <div class="loading-progress-bar" id="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="js/grader.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
